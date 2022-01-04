@@ -8,25 +8,24 @@
   "license": "gpl-3.0",
   "private": false,
   "scripts": {
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "test": "jest"
   },
   "jest": {
     "globals": {
       "ts-jest": {
-        "tsConfigFile": "tsconfig.json"
+        "tsconfig": "tsconfig.json"
       }
     },
     "moduleFileExtensions": [
-      "ts",
-      "js"
+      "js",
+      "ts"
     ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "./node_modules/ts-jest/preprocessor.js"
-    },
     "testMatch": [
-      "**/tests/**/*.test.(ts|js)"
+      "**/__tests__/**/*.test.(ts|js)"
     ],
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "preset": "ts-jest"
   },
   "dependencies": {
     "@discordjs/rest": "^0.2.0-canary.0",
