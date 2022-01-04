@@ -1,0 +1,5 @@
+{
+  "bot.newCodeThread.name": "Code execution",
+  "bot.tryRunSomeoneCode": "Attempting to run someone else's code",
+  "bot.tryRunSomeoneCode.description": "You can't run someone else's code, ask the author of the message to do it or add a reaction (\uD83D\uDD13) so that others can run that code"
+}
