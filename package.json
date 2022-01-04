@@ -7,6 +7,9 @@
   "author": "LIMPIX31",
   "license": "gpl-3.0",
   "private": false,
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
   "dependencies": {
     "@discordjs/rest": "^0.2.0-canary.0",
     "discord-api-types": "^0.26.1",
