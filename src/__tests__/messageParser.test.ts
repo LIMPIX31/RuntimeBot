@@ -15,10 +15,11 @@ const singleCodeBlock = "test"
   })
   it('should parse (multiline)', () => {
     const msgParser = new MessageParser()
-    const parsed = msgParser.parse(`\`\`\`js
+    const parsed = msgParser.parse(`Вот такой у меня код:
+\`\`\`js
 const singleCodeBlock = "test"
 \`\`\`
-
+А ещё:
 \`\`\`ts
 const imType: number = 101
 \`\`\``)

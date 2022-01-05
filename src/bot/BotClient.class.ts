@@ -73,11 +73,11 @@ export class BotClient implements IBotClient {
   }
 
   private shouldRunCode(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): boolean {
-    return !!(reaction.message.author !== null && !user.bot && reaction.emoji.name === runEmoji && reaction.users.cache.find(v => v.id === this.client.user?.id))
+    return reaction.message.author !== null && !user.bot && reaction.emoji.name === runEmoji && !!reaction.users.cache.find(v => v.id === this.client.user?.id)
   }
 
   private codeExecutionIsAllowed(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): boolean {
-    return !!(user.id === reaction.message.author?.id || reaction.message.reactions.cache.find(v => v.emoji.name === unlockEmoji))
+    return user.id === reaction.message.author?.id || !!reaction.message.reactions.cache.find(v => v.emoji.name === unlockEmoji)
   }
 
   private async startCodeThreadAtReaction(reaction: MessageReaction | PartialMessageReaction) {
@@ -108,8 +108,7 @@ export class BotClient implements IBotClient {
         return true
       }
     } else {
-      return true
+      return false
     }
   }
-
 }
