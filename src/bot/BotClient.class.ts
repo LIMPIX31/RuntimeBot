@@ -1,5 +1,14 @@
 import { BotClient as IBotClient } from '../abstracts/interfaces/BotClient.interface'
-import { Client, Intents, Message, MessageEmbed, User } from 'discord.js'
+import {
+  Client,
+  Intents,
+  Message,
+  MessageEmbed,
+  MessageReaction,
+  PartialMessageReaction,
+  PartialUser,
+  User
+} from 'discord.js'
 import { inject, injectable } from 'inversify'
 import { Logger } from '../utils/Logger'
 import { TYPES } from '../IoC/types'
@@ -52,35 +61,55 @@ export class BotClient implements IBotClient {
 
   private reactionHandler() {
     this.client.on('messageReactionAdd', async (reaction, user) => {
-      if (reaction.partial) {
-        try {
-          await reaction.fetch()
-        } catch (error) {
-          return
-        }
-      }
-
-      await reaction.users.fetch()
-
-      if (reaction.message.author !== null && !user.bot && reaction.emoji.name === runEmoji && reaction.users.cache.find(v => v.id === this.client.user?.id)) {
-        if (user.id === reaction.message.author.id || reaction.message.reactions.cache.find(v => v.emoji.name === unlockEmoji)) {
-          await reaction.users.remove(this.client.user as User)
-          await reaction.message.startThread({
-            autoArchiveDuration: 60,
-            name: `${this.i18n.translate('bot.newCodeThread.name')} [${reaction.message.author.username}]`
-          })
+      if (await this.prepareReaction(reaction)) return
+      if (this.shouldRunCode(reaction, user)) {
+        if (this.codeExecutionIsAllowed(reaction, user)) {
+          await this.startCodeThreadAtReaction(reaction)
         } else {
-          await user.send({
-            embeds: [new MessageEmbed()
-              .setTitle(this.i18n.translate('bot.tryRunSomeoneCode'))
-              .setColor('#FF0000')
-              .setDescription(this.i18n.translate('bot.tryRunSomeoneCode.description'))
-            ]
-          })
-          await reaction.users.remove(user as User)
+          await this.cancelCodeExecutionAttempt(reaction, user)
         }
       }
     })
+  }
+
+  private shouldRunCode(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): boolean {
+    return !!(reaction.message.author !== null && !user.bot && reaction.emoji.name === runEmoji && reaction.users.cache.find(v => v.id === this.client.user?.id))
+  }
+
+  private codeExecutionIsAllowed(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): boolean {
+    return !!(user.id === reaction.message.author?.id || reaction.message.reactions.cache.find(v => v.emoji.name === unlockEmoji))
+  }
+
+  private async startCodeThreadAtReaction(reaction: MessageReaction | PartialMessageReaction) {
+    await reaction.users.remove(this.client.user as User)
+    await reaction.message.startThread({
+      autoArchiveDuration: 60,
+      name: `${this.i18n.translate('bot.newCodeThread.name')} [${reaction.message.author?.username}]`
+    })
+  }
+
+  private async cancelCodeExecutionAttempt(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) {
+    await user.send({
+      embeds: [new MessageEmbed()
+        .setTitle(this.i18n.translate('bot.tryRunSomeoneCode'))
+        .setColor('#FF0000')
+        .setDescription(this.i18n.translate('bot.tryRunSomeoneCode.description'))
+      ]
+    })
+    await reaction.users.remove(user as User)
+  }
+
+  private async prepareReaction(reaction: MessageReaction | PartialMessageReaction): Promise<boolean> {
+    if (reaction.partial) {
+      try {
+        await reaction.fetch()
+        return false
+      } catch (error) {
+        return true
+      }
+    } else {
+      return true
+    }
   }
 
 }
