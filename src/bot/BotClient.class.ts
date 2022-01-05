@@ -66,6 +66,7 @@ export class BotClient implements IBotClient {
         if (user.id === reaction.message.author.id || reaction.message.reactions.cache.find(v => v.emoji.name === unlockEmoji)) {
           await reaction.users.remove(this.client.user as User)
           await reaction.message.startThread({
+            autoArchiveDuration: 60,
             name: `${this.i18n.translate('bot.newCodeThread.name')} [${reaction.message.author.username}]`
           })
         } else {
