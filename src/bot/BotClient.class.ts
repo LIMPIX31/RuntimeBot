@@ -7,6 +7,7 @@ import {
   MessageReaction,
   PartialMessageReaction,
   PartialUser,
+  ThreadChannel,
   User
 } from 'discord.js'
 import { inject, injectable } from 'inversify'
@@ -18,6 +19,7 @@ import { TemplateMessage } from '../utils/TemplateMessage.class'
 import 'reflect-metadata'
 import { I18N } from '../abstracts/interfaces/I18N.interface'
 import { MessageParser } from '../abstracts/interfaces/MessageParser.interface'
+import { RuntimeBotQuery } from './RuntimeBotQuery.class'
 
 const runEmoji = '▶️'
 const unlockEmoji = '🔓'
@@ -36,14 +38,17 @@ export class BotClient implements IBotClient {
     this.client.on('ready', () => {
       Logger.success('Runtime bot started')
     })
+    this.messageHandler()
+    this.reactionHandler()
+  }
+
+  login() {
     this.client.login(this.env.get(ENV.DISCORD_BOT_TOKEN, () => {
       Logger.fatal(TemplateMessage.envNotDefined(ENV.DISCORD_BOT_TOKEN))
     })).catch((e) => {
       Logger.fatal('Discord bot login error')
       console.error(e)
     })
-    this.messageHandler()
-    this.reactionHandler()
   }
 
   get getClient(): Client {
@@ -64,7 +69,10 @@ export class BotClient implements IBotClient {
       if (await this.prepareReaction(reaction)) return
       if (this.shouldRunCode(reaction, user)) {
         if (this.codeExecutionIsAllowed(reaction, user)) {
-          await this.startCodeThreadAtReaction(reaction)
+          const threadChannel = await this.startCodeThreadAtReaction(reaction)
+          const query = await this.generateQuery(reaction)
+          query.setUnlocked(this.isUnlockedQuery(reaction))
+          await this.startEnvironment(threadChannel, query)
         } else {
           await this.cancelCodeExecutionAttempt(reaction, user)
         }
@@ -76,13 +84,17 @@ export class BotClient implements IBotClient {
     return reaction.message.author !== null && !user.bot && reaction.emoji.name === runEmoji && !!reaction.users.cache.find(v => v.id === this.client.user?.id)
   }
 
-  private codeExecutionIsAllowed(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): boolean {
-    return user.id === reaction.message.author?.id || !!reaction.message.reactions.cache.find(v => v.emoji.name === unlockEmoji)
+  private isUnlockedQuery(reaction: MessageReaction | PartialMessageReaction):boolean{
+    return !!reaction.message.reactions.cache.find(v => v.emoji.name === unlockEmoji)
   }
 
-  private async startCodeThreadAtReaction(reaction: MessageReaction | PartialMessageReaction) {
+  private codeExecutionIsAllowed(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): boolean {
+    return user.id === reaction.message.author?.id || this.isUnlockedQuery(reaction)
+  }
+
+  private async startCodeThreadAtReaction(reaction: MessageReaction | PartialMessageReaction): Promise<ThreadChannel> {
     await reaction.users.remove(this.client.user as User)
-    await reaction.message.startThread({
+    return reaction.message.startThread({
       autoArchiveDuration: 60,
       name: `${this.i18n.translate('bot.newCodeThread.name')} [${reaction.message.author?.username}]`
     })
@@ -111,4 +123,13 @@ export class BotClient implements IBotClient {
       return false
     }
   }
+
+  private async generateQuery(reaction: MessageReaction | PartialMessageReaction){
+    return this.messageParser.parse(reaction.message.content || '')
+  }
+
+  private async startEnvironment(thread: ThreadChannel, query: RuntimeBotQuery){
+    // TODO: start environment
+  }
+
 }
