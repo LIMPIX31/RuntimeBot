@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "repository": "https://github.com/LIMPIX31/RuntimeBot.git",
   "author": "LIMPIX31",
-  "license": "gpl-3.0",
+  "license": "GPL-3.0-only",
   "private": false,
   "scripts": {
     "start": "ts-node src/index.ts",
