@@ -15,7 +15,7 @@ export class MessageParser implements IMessageParser {
     code: string
   }[] {
     return Array.from(
-      s.matchAll(/(?<!\\)\`\`\`(\w+)\n([^]*?)\n(?<!\\)\`\`\`/g)
+      s.matchAll(/(?<!\\)```(\w+)\n([^]*?)\n(?<!\\)```/g)
     ).map(v => {
       return { lang: v[1], code: v[2] }
     })
