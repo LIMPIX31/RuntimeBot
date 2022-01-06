@@ -22,8 +22,8 @@ export class I18N implements II18N {
     this.currentLocale = locale
   }
 
-  translate(path: string): string {
-    const translated = require(`../locales/${this.currentLocale}.json`)[path]
+  translate(path: string, requireLike: Function = require): string {
+    const translated = requireLike(`../locales/${this.currentLocale}.json`)[path]
     return translated ? translated : path
   }
 
