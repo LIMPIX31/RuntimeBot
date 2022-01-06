@@ -5,5 +5,7 @@ export interface I18N {
 
   translate(path: string): string
 
-  setLocale(locale: Locale): void
+  set locale(locale: Locale)
+
+  get locale(): Locale
 }
