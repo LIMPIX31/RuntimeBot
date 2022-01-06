@@ -15,7 +15,8 @@ const singleCodeBlock = "test"
   })
   it('should parse (multiline)', () => {
     const msgParser = new MessageParser()
-    const parsed = msgParser.parse(`Вот такой у меня код:
+    const parsed = msgParser.parse(`
+Вот такой у меня код:
 \`\`\`js
 const singleCodeBlock = "test"
 \`\`\`
@@ -46,5 +47,25 @@ const imType: number = 101
     const msgParser = new MessageParser()
     const parsed = msgParser.parse('```ts inline code ```')
     expect(parsed).toEqual(new RuntimeBotQuery([]))
+  })
+  it('should parse tags with filename correction', () => {
+    const msgParser = new MessageParser()
+    const parsed = msgParser.parse(`
+\`\`\`ts
+/// #FILENAME:   index   
+///     #TEST   
+const singleCodeBlock = "test"
+\`\`\`
+
+\`\`\`js
+const imType: number = 101
+\`\`\``)
+    expect(parsed).toEqual(new RuntimeBotQuery([
+      new Codeblock('ts', 'const singleCodeBlock = "test"', {
+        filename: "index.ts",
+        test: true
+      }),
+      new Codeblock('js', 'const imType: number = 101')
+    ]))
   })
 })
