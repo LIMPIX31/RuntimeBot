@@ -53,6 +53,7 @@ export class RuntimeEnvironment implements IRuntimeEnvironment {
       this.globalStage.crash()
       this.runStatus = 'error'
       this.errorMsg = this.i18n.translate('bot.environment.tracker.errorMsg.illegalImport')
+      await this.updateTrackingMessage()
       //TODO: close
       return
     }
@@ -136,12 +137,13 @@ export class RuntimeEnvironment implements IRuntimeEnvironment {
         statusTranslated = this.i18n.translate(`${envi18n}status.inProgress`)
         break
     }
-
-    return new MessageEmbed()
+    const embed = new MessageEmbed()
       .setTitle(this.i18n.translate('bot.environment.tracker.title'))
       .setColor(color as ColorResolvable)
       .setDescription(`\`\`\`${this.getLogsFromStages().join('\n')}\`\`\``)
       .addField(this.i18n.translate('bot.environment.tracker.status'), statusTranslated, true)
+    this.runStatus === 'error' && (embed.addField(this.i18n.translate('bot.environment.tracker.fields.error'), this.errorMsg))
+    return embed
   }
 
   private getLogsFromStages() {

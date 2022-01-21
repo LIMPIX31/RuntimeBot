@@ -18,5 +18,6 @@
   "bot.environment.tracker.stage.clearing": "Очистка",
   "bot.environment.tracker.stage.closed": "Закрыто",
   "bot.environment.tracker.control.run": "Запустить",
-  "bot.environment.tracker.errorMsg.illegalImport": "Обнаружен недопустимый импорт. Убедитесь, что путь к модулю не выходит за пределы вашего окружения или модуль не запрещён политикой RuntimeBot."
+  "bot.environment.tracker.errorMsg.illegalImport": "Обнаружен недопустимый импорт. Убедитесь, что путь к модулю не выходит за пределы вашего окружения и модуль не запрещён политикой RuntimeBot.",
+  "bot.environment.tracker.fields.error": "Ошибка"
 }
