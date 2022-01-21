@@ -20,6 +20,7 @@ import 'reflect-metadata'
 import { I18N } from '../abstracts/interfaces/I18N.interface'
 import { MessageParser } from '../abstracts/interfaces/MessageParser.interface'
 import { RuntimeBotQuery } from './RuntimeBotQuery.class'
+import { RuntimeEnvironment } from './RuntimeEnvironment.class'
 
 const runEmoji = '▶️'
 const unlockEmoji = '🔓'
@@ -42,6 +43,10 @@ export class BotClient implements IBotClient {
     this.reactionHandler()
   }
 
+  get getClient(): Client {
+    return this.client
+  }
+
   login() {
     this.client.login(this.env.get(ENV.DISCORD_BOT_TOKEN, () => {
       Logger.fatal(TemplateMessage.envNotDefined(ENV.DISCORD_BOT_TOKEN))
@@ -49,10 +54,6 @@ export class BotClient implements IBotClient {
       Logger.fatal('Discord bot login error')
       console.error(e)
     })
-  }
-
-  get getClient(): Client {
-    return this.client
   }
 
   private messageHandler() {
@@ -84,7 +85,7 @@ export class BotClient implements IBotClient {
     return reaction.message.author !== null && !user.bot && reaction.emoji.name === runEmoji && !!reaction.users.cache.find(v => v.id === this.client.user?.id)
   }
 
-  private isUnlockedQuery(reaction: MessageReaction | PartialMessageReaction):boolean{
+  private isUnlockedQuery(reaction: MessageReaction | PartialMessageReaction): boolean {
     return !!reaction.message.reactions.cache.find(v => v.emoji.name === unlockEmoji)
   }
 
@@ -124,12 +125,12 @@ export class BotClient implements IBotClient {
     }
   }
 
-  private async generateQuery(reaction: MessageReaction | PartialMessageReaction){
+  private async generateQuery(reaction: MessageReaction | PartialMessageReaction) {
     return this.messageParser.parse(reaction.message.content || '')
   }
 
-  private async startEnvironment(thread: ThreadChannel, query: RuntimeBotQuery){
-    // TODO: start environment
+  private async startEnvironment(thread: ThreadChannel, query: RuntimeBotQuery) {
+    await new RuntimeEnvironment(query, this.i18n, thread).init()
   }
 
 }

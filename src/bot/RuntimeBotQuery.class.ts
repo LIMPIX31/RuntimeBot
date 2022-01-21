@@ -1,12 +1,18 @@
 import { Codeblock } from './Codeblock.class'
+import { RuntimeBotQuery as IRuntimeBotQuery } from '../abstracts/interfaces/RuntimeBotQuery.interface'
 
-export class RuntimeBotQuery {
+export class RuntimeBotQuery implements IRuntimeBotQuery {
 
   private readonly codeblocks: Codeblock[]
-  private _isUnlocked: boolean = false
 
   constructor(codeblocks: Codeblock[]) {
     this.codeblocks = codeblocks
+  }
+
+  private _isUnlocked: boolean = false
+
+  get isUnlocked(): boolean {
+    return this._isUnlocked
   }
 
   get isQuery() {
@@ -17,15 +23,11 @@ export class RuntimeBotQuery {
     return this.codeblocks
   }
 
-  unlock(){
+  unlock() {
     this._isUnlocked = true
   }
 
-  setUnlocked(b:boolean){
+  setUnlocked(b: boolean) {
     this._isUnlocked = b
-  }
-
-  get isUnlocked(): boolean {
-    return this._isUnlocked
   }
 }

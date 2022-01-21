@@ -1,5 +1,22 @@
 {
   "bot.newCodeThread.name": "Выполнение кода",
   "bot.tryRunSomeoneCode": "Попытка запустить чужой код",
-  "bot.tryRunSomeoneCode.description": "Вы не можете запускать чужой код, попросите автора сообщения сделать это или добавить реакцию (\uD83D\uDD13), чтобы другие могли запускать этот код"
+  "bot.tryRunSomeoneCode.description": "Вы не можете запускать чужой код, попросите автора сообщения сделать это или добавить реакцию (\uD83D\uDD13), чтобы другие могли запускать этот код",
+  "bot.environment.tracker.title": "Выполнение",
+  "bot.environment.tracker.status": "Статус",
+  "bot.environment.tracker.status.unknown": "Неизвестно",
+  "bot.environment.tracker.status.success": "Выполнено",
+  "bot.environment.tracker.status.inProgress": "В процессе",
+  "bot.environment.tracker.status.error": "Ошибка",
+  "bot.environment.tracker.status.warning": "Выполнено с предупреждениями",
+  "bot.environment.tracker.status.idling": "Ожидается",
+  "bot.environment.tracker.stage.settingUpEnv": "Настройка окружения",
+  "bot.environment.tracker.stage.validating": "Проверка и настройка контекста",
+  "bot.environment.tracker.stage.installingDeps": "Установка зависимостей",
+  "bot.environment.tracker.stage.compiling": "Компиляция",
+  "bot.environment.tracker.stage.running": "Выполнение",
+  "bot.environment.tracker.stage.clearing": "Очистка",
+  "bot.environment.tracker.stage.closed": "Закрыто",
+  "bot.environment.tracker.control.run": "Запустить",
+  "bot.environment.tracker.errorMsg.illegalImport": "Обнаружен недопустимый импорт. Убедитесь, что путь к модулю не выходит за пределы вашего окружения или модуль не запрещён политикой RuntimeBot."
 }
